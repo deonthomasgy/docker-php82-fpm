@@ -55,13 +55,10 @@ RUN apt-get remove -y \
 
 RUN apt-get auto-remove -y
 
-RUN echo "php_value[memory_limit] = 512M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-512m.conf
-RUN echo "php_value[date.timezone] = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.conf
-RUN echo "php_value[upload_max_filesize] = 1024M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-upload-filesize-1024m.conf
-RUN echo "php_value[post_max_size] = 1024M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-post-size-1024m.conf
-#RUN echo 'max_execution_time = 1200' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
-#RUN sed -e 's/memory_limit = 128M/memory_limit = 512M/' -i  /usr/local/etc/php/php.ini-production
-#RUN sed -e 's/memory_limit = 128M/memory_limit = 512M/' -i  /usr/local/etc/php/php.ini-development
-#RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+RUN echo "memory_limit = 512M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-512m.ini
+RUN echo "date.timezone = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.ini
+RUN echo "upload_max_filesize = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-upload-filesize-1024m.ini
+RUN echo "post_max_size = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-post-size-1024m.ini
+RUN echo 'max_execution_time = 1200' >> /opt/bitnami/php/etc/conf.d/docker-php-maxexectime.ini;
 
 CMD [ "php-fpm", "-F", "--pid", "/opt/bitnami/php/tmp/php-fpm.pid", "-y", "/opt/bitnami/php/etc/php-fpm.conf" ]
