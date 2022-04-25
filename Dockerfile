@@ -32,6 +32,16 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s
     && cd - \
     && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini
 
+# Install pcov
+RUN for i in $(seq 1 3); do pecl install -o --nobuild pcov && s=0 && break || s=$? && sleep 1; done; (exit $s) \
+    && cd "$(pecl config-get temp_dir)/pcov" \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd - \
+    && echo "extension=pcov.so" > /opt/bitnami/php/etc/conf.d/pcov.ini
+
 # Install Composer
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
