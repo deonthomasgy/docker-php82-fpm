@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
         libmagickwand-6.q16-dev \
         libonig-dev \
         libzip-dev \
+        unzip \
         gnupg \
         build-essential \
     && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.10/bin-q16/MagickWand-config /usr/bin \
