@@ -1,4 +1,4 @@
-FROM bitnami/php-fpm:8.1-debian-11
+FROM bitnami/php-fpm:8.2.3-debian-11-r5
 
 MAINTAINER Deon Thomas "Deon.Thomas.GY@gmail.com"
 
