@@ -1,4 +1,4 @@
-FROM bitnami/php-fpm:8.2.3-debian-11-r5
+FROM bitnami/php-fpm:8.2.3-debian-11-r7
 
 MAINTAINER Deon Thomas "Deon.Thomas.GY@gmail.com"
 
@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
         unzip \
         gnupg \
         build-essential \
+        pdftk \
     && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.10/bin-q16/MagickWand-config /usr/bin \
     && pecl install imagick \
     && echo "extension=imagick.so" > /opt/bitnami/php/etc/conf.d/ext-imagick.ini
@@ -42,6 +43,17 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild pcov && s=0 && break || s=
     && make install \
     && cd - \
     && echo "extension=pcov.so" > /opt/bitnami/php/etc/conf.d/pcov.ini
+
+# Install zstd
+RUN for i in $(seq 1 3); do pecl install -o --nobuild zstd && s=0 && break || s=$? && sleep 1; done; (exit $s) \
+    && cd "$(pecl config-get temp_dir)/zstd" \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd - \
+    && echo "extension=zstd.so" > /opt/bitnami/php/etc/conf.d/zstd.ini
+
 
 # Install Composer
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
