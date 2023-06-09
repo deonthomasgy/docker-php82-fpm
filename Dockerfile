@@ -1,4 +1,4 @@
-FROM bitnami/php-fpm:8.2.3-debian-11-r7
+FROM bitnami/php-fpm:8.2.6-debian-11-r9
 
 MAINTAINER Deon Thomas "Deon.Thomas.GY@gmail.com"
 
@@ -78,7 +78,7 @@ RUN apt-get remove -y \
 
 RUN apt-get auto-remove -y
 
-RUN echo "memory_limit = 512M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-512m.ini
+RUN echo "memory_limit = 1024M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-1024m.ini
 RUN echo "date.timezone = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.ini
 RUN echo "upload_max_filesize = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-upload-filesize-1024m.ini
 RUN echo "post_max_size = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-post-size-1024m.ini
