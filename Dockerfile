@@ -1,4 +1,4 @@
-FROM bitnami/php-fpm:8.2.6-debian-11-r9
+FROM bitnami/php-fpm:8.2.7-debian-11-r8
 
 MAINTAINER Deon Thomas "Deon.Thomas.GY@gmail.com"
 
@@ -53,6 +53,16 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild zstd && s=0 && break || s=
     && make install \
     && cd - \
     && echo "extension=zstd.so" > /opt/bitnami/php/etc/conf.d/zstd.ini
+
+# Install excimer
+RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break || s=$? && sleep 1; done; (exit $s) \
+    && cd "$(pecl config-get temp_dir)/excimer" \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd - \
+    && echo "extension=excimer.so" > /opt/bitnami/php/etc/conf.d/excimer.ini
 
 
 # Install Composer
