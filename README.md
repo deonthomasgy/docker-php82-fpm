@@ -1,2 +1,2 @@
-# docker-php81-fpm
-PHP 8.1 FPM based on Bitnami
+# docker-php82-fpm
+PHP 8.2 FPM based on Bitnami
