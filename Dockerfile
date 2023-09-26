@@ -1,4 +1,4 @@
-FROM bitnami/php-fpm:8.2.9-debian-11-r17 as builder
+FROM bitnami/php-fpm:8.2.10-debian-11-r21 as builder
 
 MAINTAINER Deon Thomas "Deon.Thomas.GY@gmail.com"
 
@@ -63,7 +63,7 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break ||
     && echo "extension=excimer.so" > /opt/bitnami/php/etc/conf.d/excimer.ini
 
 
-FROM bitnami/php-fpm:8.2.9-debian-11-r17
+FROM bitnami/php-fpm:8.2.10-debian-11-r21
 
 COPY --from=builder /opt/bitnami/php/etc/conf.d/ext-imagick.ini /opt/bitnami/php/etc/conf.d/ext-imagick.ini
 COPY --from=builder /opt/bitnami/php/lib/php/extensions/imagick.so /opt/bitnami/php/lib/php/extensions/imagick.so
@@ -86,8 +86,8 @@ COPY --from=builder /opt/bitnami/php/lib/php/extensions/excimer.so /opt/bitnami/
 # Install Composer
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN install_packages nodejs unzip mariadb-client pdftk 
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN install_packages nodejs unzip mariadb-client pdftk git 
 
 RUN echo "memory_limit = 1024M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-1024m.ini
 RUN echo "date.timezone = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.ini
