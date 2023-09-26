@@ -1,6 +1,6 @@
-FROM bitnami/php-fpm:8.2.10-debian-11-r21 as builder
+FROM bitnami/php-fpm:8.2.10-debian-11-r26 as builder
 
-MAINTAINER Deon Thomas "Deon.Thomas.GY@gmail.com"
+MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
 # Install modules -
 RUN install_packages \
@@ -63,7 +63,7 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break ||
     && echo "extension=excimer.so" > /opt/bitnami/php/etc/conf.d/excimer.ini
 
 
-FROM bitnami/php-fpm:8.2.10-debian-11-r21
+FROM bitnami/php-fpm:8.2.10-debian-11-r26
 
 COPY --from=builder /opt/bitnami/php/etc/conf.d/ext-imagick.ini /opt/bitnami/php/etc/conf.d/ext-imagick.ini
 COPY --from=builder /opt/bitnami/php/lib/php/extensions/imagick.so /opt/bitnami/php/lib/php/extensions/imagick.so
