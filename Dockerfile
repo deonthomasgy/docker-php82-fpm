@@ -1,4 +1,4 @@
-ARG VERSION=8.2.12-debian-11-r1
+ARG VERSION=8.3.6-debian-12-r1
 
 FROM bitnami/php-fpm:$VERSION as builder
 
@@ -14,21 +14,35 @@ RUN install_packages \
         libmagickwand-6.q16-dev \
         libonig-dev \
         libzip-dev \
+        libzstd-dev \
         gnupg \
         build-essential \
-    && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.10/bin-q16/MagickWand-config /usr/bin \
-    && pecl install imagick \
+    && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.11/bin-q16/MagickWand-config /usr/bin 
+
+
+# Install igbinary (for more efficient serialization in redis/memcached)
+RUN for i in $(seq 1 3); do pecl install -o imagick && s=0 && break || s=$? && sleep 2; done; (exit $s) \
     && echo "extension=imagick.so" > /opt/bitnami/php/etc/conf.d/ext-imagick.ini
 
 # Install igbinary (for more efficient serialization in redis/memcached)
 RUN for i in $(seq 1 3); do pecl install -o igbinary && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && echo "extension=igbinary.so" > /opt/bitnami/php/etc/conf.d/igbinary.ini
 
+# Install msgpack
+RUN for i in $(seq 1 3); do pecl install -o --nobuild msgpack && s=0 && break || s=$? && sleep 1; done; (exit $s) \
+    && cd "$(pecl config-get temp_dir)/msgpack" \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd - \
+    && echo "extension=msgpack.so" > /opt/bitnami/php/etc/conf.d/msgpack.ini
+
 # Install redis (manualy build in order to be able to enable igbinary)
 RUN for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && cd "$(pecl config-get temp_dir)/redis" \
     && phpize \
-    && ./configure --enable-redis-igbinary \
+    && ./configure --enable-redis-igbinary --enable-redis-lzf --enable-redis-msgpack --enable-redis-zstd \
     && make \
     && make install \
     && cd - \
@@ -64,7 +78,6 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break ||
     && cd - \
     && echo "extension=excimer.so" > /opt/bitnami/php/etc/conf.d/excimer.ini
 
-
 FROM bitnami/php-fpm:$VERSION
 
 COPY --from=builder /opt/bitnami/php/etc/conf.d/ext-imagick.ini /opt/bitnami/php/etc/conf.d/ext-imagick.ini
@@ -85,6 +98,9 @@ COPY --from=builder /opt/bitnami/php/lib/php/extensions/zstd.so /opt/bitnami/php
 COPY --from=builder /opt/bitnami/php/etc/conf.d/excimer.ini /opt/bitnami/php/etc/conf.d/excimer.ini
 COPY --from=builder /opt/bitnami/php/lib/php/extensions/excimer.so /opt/bitnami/php/lib/php/extensions/excimer.so
 
+COPY --from=builder /opt/bitnami/php/etc/conf.d/msgpack.ini /opt/bitnami/php/etc/conf.d/msgpack.ini
+COPY --from=builder /opt/bitnami/php/lib/php/extensions/msgpack.so /opt/bitnami/php/lib/php/extensions/msgpack.so
+
 # Install Composer
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
@@ -101,7 +117,7 @@ RUN set -uex; \
 
 RUN install_packages nodejs unzip mariadb-client pdftk git 
 
-RUN echo "memory_limit = 1024M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-1024m.ini
+RUN echo "memory_limit = 2048M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-1024m.ini
 RUN echo "date.timezone = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.ini
 RUN echo "upload_max_filesize = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-upload-filesize-128m.ini
 RUN echo "post_max_size = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-post-size-128m.ini
