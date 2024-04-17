@@ -19,9 +19,8 @@ RUN install_packages \
         build-essential \
     && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.11/bin-q16/MagickWand-config /usr/bin 
 
-
 # Install igbinary (for more efficient serialization in redis/memcached)
-RUN for i in $(seq 1 3); do pecl install -o imagick && s=0 && break || s=$? && sleep 2; done; (exit $s) \
+RUN for i in $(seq 1 3); do pecl install -o imagick && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && echo "extension=imagick.so" > /opt/bitnami/php/etc/conf.d/ext-imagick.ini
 
 # Install igbinary (for more efficient serialization in redis/memcached)
