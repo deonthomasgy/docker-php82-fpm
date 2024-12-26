@@ -29,13 +29,7 @@ RUN for i in $(seq 1 3); do pecl install -o igbinary && s=0 && break || s=$? && 
     && echo "extension=igbinary.so" > /opt/bitnami/php/etc/conf.d/igbinary.ini
 
 # Install xhprof
-RUN for i in $(seq 1 3); do pecl install -o --nobuild xhprof && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && cd "$(pecl config-get temp_dir)/xhprof" \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && cd - \
+RUN for i in $(seq 1 3); do pecl install xhprof && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && echo "extension=xhprof.so" > /opt/bitnami/php/etc/conf.d/xhprof.ini
 
 # Install msgpack
