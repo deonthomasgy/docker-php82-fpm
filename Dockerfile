@@ -6,7 +6,7 @@ FROM serversideup/php:8.4-fpm as builder
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
 # Install modules -
-RUN install_packages \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
@@ -19,7 +19,8 @@ RUN install_packages \
         libpq-dev \
         gnupg \
         build-essential \
-    && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.11/bin-q16/MagickWand-config /usr/bin 
+    && ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.9.11/bin-q16/MagickWand-config /usr/bin \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install igbinary (for more efficient serialization in redis/memcached)
 RUN for i in $(seq 1 3); do pecl install -o imagick && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -124,7 +125,7 @@ RUN set -uex; \
      > /etc/apt/sources.list.d/nodesource.list; \
     apt-get update; 
 
-RUN install_packages nodejs unzip mariadb-client pdftk git 
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs unzip mariadb-client pdftk git && rm -rf /var/lib/apt/lists/*
 
 RUN echo "memory_limit = 2048M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-1024m.ini
 RUN echo "date.timezone = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.ini
