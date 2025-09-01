@@ -24,15 +24,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install igbinary (for more efficient serialization in redis/memcached)
 RUN for i in $(seq 1 3); do pecl install -o imagick && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && echo "extension=imagick.so" > /opt/bitnami/php/etc/conf.d/ext-imagick.ini
+    && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini
 
 # Install igbinary (for more efficient serialization in redis/memcached)
 RUN for i in $(seq 1 3); do pecl install -o igbinary && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && echo "extension=igbinary.so" > /opt/bitnami/php/etc/conf.d/igbinary.ini
+    && echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/igbinary.ini
 
 # Install xhprof
 RUN for i in $(seq 1 3); do pecl install xhprof && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && echo "extension=xhprof.so" > /opt/bitnami/php/etc/conf.d/xhprof.ini
+    && echo "extension=xhprof.so" > /usr/local/etc/php/conf.d/xhprof.ini
 
 # Install msgpack
 RUN for i in $(seq 1 3); do pecl install -o --nobuild msgpack && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -42,7 +42,7 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild msgpack && s=0 && break ||
     && make \
     && make install \
     && cd - \
-    && echo "extension=msgpack.so" > /opt/bitnami/php/etc/conf.d/msgpack.ini
+    && echo "extension=msgpack.so" > /usr/local/etc/php/conf.d/msgpack.ini
 
 # Install redis (manualy build in order to be able to enable igbinary)
 RUN for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -52,7 +52,7 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s
     && make \
     && make install \
     && cd - \
-    && echo "extension=redis.so" > /opt/bitnami/php/etc/conf.d/redis.ini
+    && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
 
 # Install pcov
 RUN for i in $(seq 1 3); do pecl install -o --nobuild pcov && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -62,7 +62,7 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild pcov && s=0 && break || s=
     && make \
     && make install \
     && cd - \
-    && echo "extension=pcov.so" > /opt/bitnami/php/etc/conf.d/pcov.ini
+    && echo "extension=pcov.so" > /usr/local/etc/php/conf.d/pcov.ini
 
 # Install zstd
 RUN for i in $(seq 1 3); do pecl install -o --nobuild zstd && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -72,7 +72,7 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild zstd && s=0 && break || s=
     && make \
     && make install \
     && cd - \
-    && echo "extension=zstd.so" > /opt/bitnami/php/etc/conf.d/zstd.ini
+    && echo "extension=zstd.so" > /usr/local/etc/php/conf.d/zstd.ini
 
 # Install excimer
 RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -82,33 +82,33 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break ||
     && make \
     && make install \
     && cd - \
-    && echo "extension=excimer.so" > /opt/bitnami/php/etc/conf.d/excimer.ini
+    && echo "extension=excimer.so" > /usr/local/etc/php/conf.d/excimer.ini
 
-FROM bitnami/php-fpm:$VERSION
+FROM serversideup/php:8.4-fpm
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/ext-imagick.ini /opt/bitnami/php/etc/conf.d/ext-imagick.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/imagick.so /opt/bitnami/php/lib/php/extensions/imagick.so
+COPY --from=builder /usr/local/etc/php/conf.d/ext-imagick.ini /usr/local/etc/php/conf.d/ext-imagick.ini
+COPY --from=builder /usr/local/lib/php/extensions/imagick.so /usr/local/lib/php/extensions/imagick.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/igbinary.ini /opt/bitnami/php/etc/conf.d/igbinary.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/igbinary.so /opt/bitnami/php/lib/php/extensions/igbinary.so
+COPY --from=builder /usr/local/etc/php/conf.d/igbinary.ini /usr/local/etc/php/conf.d/igbinary.ini
+COPY --from=builder /usr/local/lib/php/extensions/igbinary.so /usr/local/lib/php/extensions/igbinary.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/redis.ini /opt/bitnami/php/etc/conf.d/redis.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/redis.so /opt/bitnami/php/lib/php/extensions/redis.so
+COPY --from=builder /usr/local/etc/php/conf.d/redis.ini /usr/local/etc/php/conf.d/redis.ini
+COPY --from=builder /usr/local/lib/php/extensions/redis.so /usr/local/lib/php/extensions/redis.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/pcov.ini /opt/bitnami/php/etc/conf.d/pcov.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/pcov.so /opt/bitnami/php/lib/php/extensions/pcov.so
+COPY --from=builder /usr/local/etc/php/conf.d/pcov.ini /usr/local/etc/php/conf.d/pcov.ini
+COPY --from=builder /usr/local/lib/php/extensions/pcov.so /usr/local/lib/php/extensions/pcov.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/zstd.ini /opt/bitnami/php/etc/conf.d/zstd.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/zstd.so /opt/bitnami/php/lib/php/extensions/zstd.so
+COPY --from=builder /usr/local/etc/php/conf.d/zstd.ini /usr/local/etc/php/conf.d/zstd.ini
+COPY --from=builder /usr/local/lib/php/extensions/zstd.so /usr/local/lib/php/extensions/zstd.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/excimer.ini /opt/bitnami/php/etc/conf.d/excimer.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/excimer.so /opt/bitnami/php/lib/php/extensions/excimer.so
+COPY --from=builder /usr/local/etc/php/conf.d/excimer.ini /usr/local/etc/php/conf.d/excimer.ini
+COPY --from=builder /usr/local/lib/php/extensions/excimer.so /usr/local/lib/php/extensions/excimer.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/xhprof.ini /opt/bitnami/php/etc/conf.d/xhprof.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/xhprof.so /opt/bitnami/php/lib/php/extensions/xhprof.so
+COPY --from=builder /usr/local/etc/php/conf.d/xhprof.ini /usr/local/etc/php/conf.d/xhprof.ini
+COPY --from=builder /usr/local/lib/php/extensions/xhprof.so /usr/local/lib/php/extensions/xhprof.so
 
-COPY --from=builder /opt/bitnami/php/etc/conf.d/msgpack.ini /opt/bitnami/php/etc/conf.d/msgpack.ini
-COPY --from=builder /opt/bitnami/php/lib/php/extensions/msgpack.so /opt/bitnami/php/lib/php/extensions/msgpack.so
+COPY --from=builder /usr/local/etc/php/conf.d/msgpack.ini /usr/local/etc/php/conf.d/msgpack.ini
+COPY --from=builder /usr/local/lib/php/extensions/msgpack.so /usr/local/lib/php/extensions/msgpack.so
 
 
 # Install Composer
@@ -127,10 +127,10 @@ RUN set -uex; \
 
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs unzip mariadb-client pdftk git && rm -rf /var/lib/apt/lists/*
 
-RUN echo "memory_limit = 2048M" >> /opt/bitnami/php/etc/conf.d/docker-php-memory-limit-1024m.ini
-RUN echo "date.timezone = America/Guyana" >> /opt/bitnami/php/etc/conf.d/docker-php-timezone-guyana.ini
-RUN echo "upload_max_filesize = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-upload-filesize-128m.ini
-RUN echo "post_max_size = 128M" >> /opt/bitnami/php/etc/conf.d/docker-php-max-post-size-128m.ini
-RUN echo 'max_execution_time = 1200' >> /opt/bitnami/php/etc/conf.d/docker-php-maxexectime.ini;
+RUN echo "memory_limit = 2048M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit-1024m.ini
+RUN echo "date.timezone = America/Guyana" >> /usr/local/etc/php/conf.d/docker-php-timezone-guyana.ini
+RUN echo "upload_max_filesize = 128M" >> /usr/local/etc/php/conf.d/docker-php-max-upload-filesize-128m.ini
+RUN echo "post_max_size = 128M" >> /usr/local/etc/php/conf.d/docker-php-max-post-size-128m.ini
+RUN echo 'max_execution_time = 1200' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
 
-CMD [ "php-fpm", "-F", "--pid", "/opt/bitnami/php/tmp/php-fpm.pid", "-y", "/opt/bitnami/php/etc/php-fpm.conf" ]
+CMD [ "php-fpm", "-F", "--pid", "/usr/local/var/run/php-fpm.pid", "-y", "/usr/local/etc/php-fpm.conf" ]
