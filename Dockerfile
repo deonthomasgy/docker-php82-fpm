@@ -34,21 +34,11 @@ RUN for i in $(seq 1 3); do pecl install -o igbinary && s=0 && break || s=$? && 
 RUN for i in $(seq 1 3); do pecl install xhprof && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && echo "extension=xhprof.so" > /usr/local/etc/php/conf.d/xhprof.ini
 
-# Install msgpack
-RUN for i in $(seq 1 3); do pecl install -o --nobuild msgpack && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && cd "$(pecl config-get temp_dir)/msgpack" \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && cd - \
-    && echo "extension=msgpack.so" > /usr/local/etc/php/conf.d/msgpack.ini
-
 # Install redis (manualy build in order to be able to enable igbinary)
 RUN for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && cd "$(pecl config-get temp_dir)/redis" \
     && phpize \
-    && ./configure --enable-redis-igbinary --enable-redis-lzf --enable-redis-msgpack --enable-redis-zstd \
+    && ./configure --enable-redis-igbinary --enable-redis-lzf  \
     && make \
     && make install \
     && cd - \
@@ -63,16 +53,6 @@ RUN for i in $(seq 1 3); do pecl install -o --nobuild pcov && s=0 && break || s=
     && make install \
     && cd - \
     && echo "extension=pcov.so" > /usr/local/etc/php/conf.d/pcov.ini
-
-# Install zstd
-RUN for i in $(seq 1 3); do pecl install -o --nobuild zstd && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && cd "$(pecl config-get temp_dir)/zstd" \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && cd - \
-    && echo "extension=zstd.so" > /usr/local/etc/php/conf.d/zstd.ini
 
 # Install excimer
 RUN for i in $(seq 1 3); do pecl install -o --nobuild excimer && s=0 && break || s=$? && sleep 1; done; (exit $s) \
@@ -98,17 +78,11 @@ COPY --from=builder /usr/local/lib/php/extensions/redis.so /usr/local/lib/php/ex
 COPY --from=builder /usr/local/etc/php/conf.d/pcov.ini /usr/local/etc/php/conf.d/pcov.ini
 COPY --from=builder /usr/local/lib/php/extensions/pcov.so /usr/local/lib/php/extensions/pcov.so
 
-COPY --from=builder /usr/local/etc/php/conf.d/zstd.ini /usr/local/etc/php/conf.d/zstd.ini
-COPY --from=builder /usr/local/lib/php/extensions/zstd.so /usr/local/lib/php/extensions/zstd.so
-
 COPY --from=builder /usr/local/etc/php/conf.d/excimer.ini /usr/local/etc/php/conf.d/excimer.ini
 COPY --from=builder /usr/local/lib/php/extensions/excimer.so /usr/local/lib/php/extensions/excimer.so
 
 COPY --from=builder /usr/local/etc/php/conf.d/xhprof.ini /usr/local/etc/php/conf.d/xhprof.ini
 COPY --from=builder /usr/local/lib/php/extensions/xhprof.so /usr/local/lib/php/extensions/xhprof.so
-
-COPY --from=builder /usr/local/etc/php/conf.d/msgpack.ini /usr/local/etc/php/conf.d/msgpack.ini
-COPY --from=builder /usr/local/lib/php/extensions/msgpack.so /usr/local/lib/php/extensions/msgpack.so
 
 
 # Install Composer
