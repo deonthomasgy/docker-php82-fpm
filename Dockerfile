@@ -1,6 +1,7 @@
-ARG VERSION=8.3.14-debian-12-r0
+ARG VERSION=8.4.11-debian-12-r5
 
-FROM bitnami/php-fpm:$VERSION as builder
+#FROM bitnami/php-fpm:$VERSION as builder
+FROM serversideup/php:8.4-fpm as builder
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
