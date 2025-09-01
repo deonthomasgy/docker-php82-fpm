@@ -35,7 +35,8 @@ RUN for i in $(seq 1 3); do pecl install xhprof && s=0 && break || s=$? && sleep
     && echo "extension=xhprof.so" > /usr/local/etc/php/conf.d/xhprof.ini
 
 # Install redis (manualy build in order to be able to enable igbinary)
-RUN for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s=$? && sleep 1; done; (exit $s) \
+RUN (pecl uninstall redis || true) && \
+    for i in $(seq 1 3); do pecl install -o --nobuild redis && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && cd "$(pecl config-get temp_dir)/redis" \
     && phpize \
     && ./configure --enable-redis-igbinary --enable-redis-lzf  \
