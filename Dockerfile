@@ -4,7 +4,7 @@ ARG VERSION=8.4.11-debian-12-r5
 FROM serversideup/php:8.4-fpm as builder
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
-
+USER 0
 # Install modules -
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libmcrypt-dev \
         libwebp-dev \
         libpng-dev \
-        libmagickwand-6.q16-dev \
         libonig-dev \
+        libmagickwand-dev \
         libzip-dev \
         libzstd-dev \
         libpq-dev \
