@@ -7,7 +7,8 @@ MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
 USER 0
 
-ENV DEBUG=1 \
+ENV DEBUG=0 \
+    TZ=America/Guyana \
     DISABLE_AUTORUN_COMPOSER_INSTALL=1 \
     DISABLE_GREETING=1 \
     DISABLE_AUTORUN_SCRIPTS=1 \
@@ -28,6 +29,16 @@ RUN set -uex; \
 
 RUN mkdir -p /usr/share/man/man1
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs unzip mariadb-client pdftk git && rm -rf /var/lib/apt/lists/*
+
+RUN if [ -f /usr/local/etc/php/conf.d/zz-docker-shinsenter-php.ini ]; then \
+        sed -i \
+            -e '/memory_limit/d' \
+            -e '/date.timezone/d' \
+            -e '/upload_max_filesize/d' \
+            -e '/post_max_size/d' \
+            -e '/max_execution_time/d' \
+            /usr/local/etc/php/conf.d/zz-docker-shinsenter-php.ini; \
+    fi
 
 RUN echo "memory_limit = 2048M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit-1024m.ini
 RUN echo "date.timezone = America/Guyana" >> /usr/local/etc/php/conf.d/docker-php-timezone-guyana.ini
