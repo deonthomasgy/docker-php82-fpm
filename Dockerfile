@@ -7,6 +7,14 @@ MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
 USER 0
 
+ENV DEBUG=1 \
+    DISABLE_AUTORUN_COMPOSER_INSTALL=1 \
+    DISABLE_GREETING=1 \
+    DISABLE_AUTORUN_SCRIPTS=1 \
+    DISABLE_AUTORUN_FIX_OWNER_GROUP=1 \
+    APP_PATH=/home/thomas/WEBDEV/mintage \
+    DOCUMENT_ROOT=/home/thomas/WEBDEV/mintage/public
+
 RUN set -uex; \
     apt-get update; \
     apt-get install -y ca-certificates curl gnupg; \
