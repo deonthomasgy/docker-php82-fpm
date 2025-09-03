@@ -18,6 +18,7 @@ RUN set -uex; \
      > /etc/apt/sources.list.d/nodesource.list; \
     apt-get update; 
 
+RUN mkdir -p /usr/share/man/man1
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs unzip mariadb-client pdftk git && rm -rf /var/lib/apt/lists/*
 
 RUN echo "memory_limit = 2048M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit-1024m.ini
