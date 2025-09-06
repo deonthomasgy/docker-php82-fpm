@@ -16,9 +16,11 @@ ENV DEBUG=0 \
     APP_PATH=/home/thomas/WEBDEV/mintage \
     DOCUMENT_ROOT=/home/thomas/WEBDEV/mintage/public
 
+RUN mkdir -p /usr/share/man/man1
+
 RUN set -uex; \
     apt-get update; \
-    apt-get install -y ca-certificates curl gnupg; \
+    apt-get install -y ca-certificates curl gnupg unzip mariadb-client pdftk git; \
     mkdir -p /etc/apt/keyrings; \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
      | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
@@ -26,9 +28,6 @@ RUN set -uex; \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" \
      > /etc/apt/sources.list.d/nodesource.list; \
     apt-get update; 
-
-RUN mkdir -p /usr/share/man/man1
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs unzip mariadb-client pdftk git && rm -rf /var/lib/apt/lists/*
 
 RUN if [ -f /usr/local/etc/php/conf.d/zz-docker-shinsenter-php.ini ]; then \
         sed -i \
@@ -40,10 +39,11 @@ RUN if [ -f /usr/local/etc/php/conf.d/zz-docker-shinsenter-php.ini ]; then \
             /usr/local/etc/php/conf.d/zz-docker-shinsenter-php.ini; \
     fi
 
-RUN echo "memory_limit = 2048M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit-1024m.ini
+RUN echo "memory_limit = 10240M" >> /usr/local/etc/php/conf.d/docker-php-memory-limit-10240m.ini
 RUN echo "date.timezone = America/Guyana" >> /usr/local/etc/php/conf.d/docker-php-timezone-guyana.ini
-RUN echo "upload_max_filesize = 128M" >> /usr/local/etc/php/conf.d/docker-php-max-upload-filesize-128m.ini
-RUN echo "post_max_size = 128M" >> /usr/local/etc/php/conf.d/docker-php-max-post-size-128m.ini
-RUN echo 'max_execution_time = 1200' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
+RUN echo "upload_max_filesize = 256M" >> /usr/local/etc/php/conf.d/docker-php-max-upload-filesize-256m.ini
+RUN echo "post_max_size = 256M" >> /usr/local/etc/php/conf.d/docker-php-max-post-size-256m.ini
+RUN echo 'max_execution_time = 1800' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
+RUN echo 'max_input_time = 1800' >> /usr/local/etc/php/conf.d/docker-php-maxinputtime.ini;
 
 CMD [ "php-fpm", "-F", "--pid", "/usr/local/var/run/php-fpm.pid", "-y", "/usr/local/etc/php-fpm.conf" ]
