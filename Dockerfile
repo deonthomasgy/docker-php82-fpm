@@ -33,7 +33,8 @@ RUN install-php-extensions \
     msgpack \
     redis \
     zstd \
-    gd
+    gd \
+    intl
 
 # Configure PHP settings
 # We use environment variables supported by serversideup/php where available
