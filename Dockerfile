@@ -32,12 +32,14 @@ RUN install-php-extensions \
     igbinary \
     msgpack \
     redis \
-    zstd 
+    zstd \
+    gd
 
 # Configure PHP settings
 # We use environment variables supported by serversideup/php where available
 ENV PHP_MEMORY_LIMIT=2048M
 ENV PHP_MAX_EXECUTION_TIME=1200
+ENV PHP_OPCACHE_ENABLE=1
 
 # For settings that might not have direct ENV mapping or to ensure specific values,
 # we write to a custom INI file.
@@ -49,9 +51,8 @@ RUN echo "upload_max_filesize = 128M" > /usr/local/etc/php/conf.d/custom-upload.
 RUN groupadd -g 1000 thomas \
     && useradd -u 1000 -g thomas -m -s /bin/bash thomas
 
-# Update PHP-FPM to run as thomas
-RUN sed -i 's/user = www-data/user = thomas/g' /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i 's/group = www-data/group = thomas/g' /usr/local/etc/php-fpm.d/www.conf
+# Install Composer
+RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
-# Switch back to the unprivileged user
-USER thomas
+# Set default user to root
+USER root
