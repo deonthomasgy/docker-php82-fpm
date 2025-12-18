@@ -45,5 +45,13 @@ RUN echo "upload_max_filesize = 128M" > /usr/local/etc/php/conf.d/custom-upload.
     && echo "post_max_size = 128M" >> /usr/local/etc/php/conf.d/custom-upload.ini \
     && echo "date.timezone = America/Guyana" > /usr/local/etc/php/conf.d/custom-timezone.ini
 
-# Switch back to the unprivileged user (www-data is standard for these images)
-USER www-data
+# Create the user thomas with UID 1000 and GID 1000
+RUN groupadd -g 1000 thomas \
+    && useradd -u 1000 -g thomas -m -s /bin/bash thomas
+
+# Update PHP-FPM to run as thomas
+RUN sed -i 's/user = www-data/user = thomas/g' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/group = www-data/group = thomas/g' /usr/local/etc/php-fpm.d/www.conf
+
+# Switch back to the unprivileged user
+USER thomas
