@@ -30,12 +30,9 @@ RUN apt-get update \
 RUN install-php-extensions \
     imagick \
     igbinary \
-    xhprof \
     msgpack \
     redis \
-    pcov \
-    zstd \
-    excimer
+    zstd 
 
 # Configure PHP settings
 # We use environment variables supported by serversideup/php where available
