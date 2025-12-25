@@ -18,7 +18,7 @@ RUN apt-get update \
         pdftk \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get install -y nodejs \
     && apt-get clean \
@@ -41,6 +41,8 @@ RUN install-php-extensions \
 ENV PHP_MEMORY_LIMIT=2048M
 ENV PHP_MAX_EXECUTION_TIME=1200
 ENV PHP_OPCACHE_ENABLE=1
+ENV PHP_FPM_CHILD_PROCESS_USER=thomas
+ENV PHP_FPM_CHILD_PROCESS_GROUP=thomas
 
 # For settings that might not have direct ENV mapping or to ensure specific values,
 # we write to a custom INI file.
@@ -57,3 +59,8 @@ RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-di
 
 # Set default user to root
 USER root
+
+# Set the default shell to bash
+SHELL ["/bin/bash", "-c"]
+
+CMD [ "php-fpm", "-F", "--pid", "/var/run/php-fpm.pid", "-y", "/usr/local/etc/php-fpm.conf" ]
