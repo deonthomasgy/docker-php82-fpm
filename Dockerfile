@@ -1,4 +1,4 @@
-FROM serversideup/php:8.4-fpm
+FROM serversideup/php:8.5-fpm
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
@@ -14,6 +14,7 @@ RUN apt-get update \
         ca-certificates \
         unzip \
         git \
+        openssl-client \
         mariadb-client \
         pdftk \
     && mkdir -p /etc/apt/keyrings \
@@ -58,7 +59,7 @@ RUN groupadd -g 1000 thomas \
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
 # Set default user to root
-USER root
+USER www-data
 
 # Set the default shell to bash
 SHELL ["/bin/bash", "-c"]
