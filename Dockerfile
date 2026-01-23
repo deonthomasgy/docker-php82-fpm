@@ -14,7 +14,7 @@ RUN apt-get update \
         ca-certificates \
         unzip \
         git \
-        openssl-client \
+        openssh-client \
         mariadb-client \
         pdftk \
     && mkdir -p /etc/apt/keyrings \
@@ -59,9 +59,15 @@ RUN groupadd -g 1000 thomas \
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
 # Set default user to root
-USER www-data
+USER root
 
 # Set the default shell to bash
 SHELL ["/bin/bash", "-c"]
 
+# Copy entrypoint script and make it executable
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Set entrypoint (CMD becomes arguments to entrypoint)
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD [ "php-fpm", "-F", "--pid", "/var/run/php-fpm.pid", "-y", "/usr/local/etc/php-fpm.conf" ]
