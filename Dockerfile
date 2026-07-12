@@ -1,4 +1,4 @@
-FROM serversideup/php:8.5-fpm
+FROM serversideup/php:8.4.23-fpm
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
@@ -35,7 +35,9 @@ RUN install-php-extensions \
     redis \
     zstd \
     gd \
-    intl
+    intl \
+    exif \
+    bcmath
 
 # Configure PHP settings
 # We use environment variables supported by serversideup/php where available
@@ -54,6 +56,12 @@ RUN echo "upload_max_filesize = 128M" > /usr/local/etc/php/conf.d/custom-upload.
 # Create the user thomas with UID 1000 and GID 1000
 RUN groupadd -g 1000 thomas \
     && useradd -u 1000 -g thomas -m -s /bin/bash thomas
+
+# Configure PHP-FPM pool settings
+# Modify the existing pool configuration to set user/group (preserves listen = 9000 and other defaults)
+# The base image provides a full config with listen = 9000 and ping.response, we just need to uncomment and set user/group
+RUN sed -i 's/^;user = www-data/user = thomas/' /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf \
+    && sed -i 's/^;group = www-data/group = thomas/' /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf
 
 # Install Composer
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
