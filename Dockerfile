@@ -1,4 +1,4 @@
-FROM serversideup/php:8.4.23-fpm
+FROM serversideup/php:8.4.24-fpm
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
@@ -28,11 +28,12 @@ RUN apt-get update \
 # Install PHP extensions using the included helper script
 # This handles dependencies automatically (e.g. libmagickwand for imagick)
 # serversideup/php includes install-php-extensions
+# PECL REST info.xml is currently 404, so PECL-only extensions are installed
+# from GitHub tags. redis is already provided by the base image.
 RUN install-php-extensions \
-    imagick \
-    igbinary \
-    msgpack \
-    redis \
+    Imagick/imagick@3.8.1 \
+    igbinary/igbinary@3.2.16 \
+    msgpack/msgpack-php@v3.0.1 \
     zstd \
     gd \
     intl \
