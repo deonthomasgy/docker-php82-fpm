@@ -1,4 +1,4 @@
-FROM serversideup/php:8.4.24-fpm
+FROM serversideup/php:8.4.26-fpm
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
