@@ -1,4 +1,4 @@
-FROM serversideup/php:8.4.26-fpm
+FROM serversideup/php:8.4.27-fpm
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
@@ -34,11 +34,26 @@ RUN install-php-extensions \
     Imagick/imagick@3.8.1 \
     igbinary/igbinary@3.2.16 \
     msgpack/msgpack-php@v3.0.1 \
-    zstd \
     gd \
     intl \
     exif \
     bcmath
+
+# zstd: pecl.php.net/get returns 500 and the GitHub tarball lacks the bundled
+# zstd submodule, so build it from source against the system libzstd.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends $PHPIZE_DEPS libzstd-dev \
+    && curl -fsSL https://github.com/kjdev/php-ext-zstd/archive/refs/tags/0.18.0.tar.gz | tar -xz -C /tmp \
+    && cd /tmp/php-ext-zstd-0.18.0 \
+    && phpize \
+    && ./configure --with-libzstd \
+    && make -j"$(nproc)" \
+    && make install \
+    && docker-php-ext-enable zstd \
+    && cd / \
+    && rm -rf /tmp/php-ext-zstd-0.18.0 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Configure PHP settings
 # We use environment variables supported by serversideup/php where available
