@@ -13,7 +13,7 @@
 #   IMAGE_REGISTRY   Default: registry.gitlab.com/mintage-payroll/mintage
 #   IMAGE_TAG_PREFIX Default: PHP-FPM-
 #   MINTAGE_TAG      Image tag suffix; default: YYYY.MM.DD-<git-short-sha> (UTC-4, matches mintage CI)
-#   BASE_IMAGE_REPO  Default: serversideup/php
+#   BASE_IMAGE_REPO  Default: repository from the Dockerfile FROM line (e.g. serversideup/php)
 #   PHP_MINOR        Default: derived from Dockerfile (e.g. 8.5.7 -> 8.5)
 #   LOCAL_IMAGE_NAME Default: invernisoft.io/mintage (intermediate build tag, matches mintage CI)
 #
@@ -26,7 +26,7 @@ DOCKERFILE="${REPO_ROOT}/Dockerfile"
 
 IMAGE_REGISTRY="${IMAGE_REGISTRY:-registry.gitlab.com/mintage-payroll/mintage}"
 IMAGE_TAG_PREFIX="${IMAGE_TAG_PREFIX:-PHP-FPM-}"
-BASE_IMAGE_REPO="${BASE_IMAGE_REPO:-serversideup/php}"
+BASE_IMAGE_REPO="${BASE_IMAGE_REPO:-}"
 PHP_MINOR="${PHP_MINOR:-}"
 LOCAL_IMAGE_NAME="${LOCAL_IMAGE_NAME:-invernisoft.io/mintage}"
 
@@ -173,6 +173,10 @@ main() {
     parse_args "$@"
 
     [[ -f "$DOCKERFILE" ]] || die "Dockerfile not found at $DOCKERFILE"
+    if [[ -z "$BASE_IMAGE_REPO" ]]; then
+        BASE_IMAGE_REPO="$(sed -nE 's|^FROM[[:space:]]+([^:[:space:]]+):.*|\1|p' "$DOCKERFILE" | head -1)"
+        [[ -n "$BASE_IMAGE_REPO" ]] || die "could not parse base image repository from $DOCKERFILE"
+    fi
     command -v docker >/dev/null || die "docker is required"
     command -v python3 >/dev/null || die "python3 is required (used to query Docker Hub tags)"
 
