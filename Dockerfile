@@ -1,10 +1,4 @@
-FROM princeamd/php:8.4.27-fpm
-# NOTE: princeamd/php:8.4.27-fpm is a self-built copy of serversideup/php
-# (fpm, trixie) from serversideup/docker-php@31651b0 on php:8.4.27-fpm-trixie,
-# published because upstream had not released 8.4.27 yet. princeamd/php does
-# not track upstream: once serversideup/php publishes 8.4.27+, change this FROM
-# back to serversideup/php:8.4.27-fpm and run ./scripts/upgrade-build-push.sh.
-# Keep the FROM on line 1; upgrade-build-push.sh rewrites that line.
+FROM serversideup/php:8.4.27-fpm
 
 MAINTAINER Deon Thomas "deon.thomas@invernisoft.com"
 
