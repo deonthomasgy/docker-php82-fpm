@@ -82,6 +82,9 @@ RUN sed -i 's/^;user = www-data/user = thomas/' /usr/local/etc/php-fpm.d/docker-
 # Install Composer
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
+# Mitigate CVE-2026-115560 before request parsing; retain until a fixed PHP release.
+RUN echo "session.upload_progress.enabled = 0" > /usr/local/etc/php/conf.d/zz-session-security.ini
+
 # Set default user to root
 USER root
 
